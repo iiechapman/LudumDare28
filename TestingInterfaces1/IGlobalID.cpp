@@ -9,6 +9,4 @@
 #include "IGlobalID.h"
 
 
-
-
 GUID IGlobalID::GetGUID(){return m_GUID;}

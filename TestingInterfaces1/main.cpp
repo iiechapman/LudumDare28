@@ -71,8 +71,9 @@ Timer*      gameTimer;
 float cameraX = 0,cameraY = 0;
 float startCameraX = 0, startCameraY = 0;
 
-int bounceTime = 200;
+int bounceTime = 100;
 int bounceTimer = bounceTime;
+
 
 int transitionTime = 3000;
 int transitionTimer = transitionTime;
@@ -776,7 +777,6 @@ int SdlApplication::run(int width, int height)
         switch (GAME_STATE)
         {
             case LEVEL:
-                
                 if (playerAlive && !playerWinning)
                 {
                     PlaceActorAt(cursorActor,mouseX - 20, mouseY- 20);
@@ -826,7 +826,6 @@ int SdlApplication::run(int width, int height)
                     }
                 }
                 
-                UpdateParticles(gameTimer->GetDelta());
                 playerMoveUp->Start();
                 MoveAim();
                 CheckActivePower();
@@ -837,6 +836,7 @@ int SdlApplication::run(int width, int height)
                 CheckForBounds();
                 PlaceCannonOnPlayer();
                 PlaceOrbsAroundShip();
+                UpdateParticles(gameTimer->GetDelta());
                 break;
                 
             case CLEAN:
@@ -1005,7 +1005,10 @@ void SdlApplication::onEvent(SDL_Event* ev)
                 break;
                 
             case SDLK_r:
-                LoadSpawnPoint();
+                if (GAME_STATE == LEVEL)
+                {
+                    LoadSpawnPoint();
+                }
                 break;
                 
                 case SDLK_SPACE:
@@ -1292,12 +1295,49 @@ void EjectParticles(float x , float y,int numberOfParticles)
         
         int randomColor = 1 + rand() % 30 + (1 * 10);
         
+        float xSpeed,ySpeed;
+        float finalXSpeed,finalYSpeed;
+        bool flipVert,flipHor;
+        dimensions_t tempDisplacement;
         Color newColor;
+        
+        
         switch ((*curr)->GetID()) {
             case PARTICLE_TYPE_RAY:
                 newColor.red = randomColor + 30;
                 newColor.green = randomColor + 44;
                 newColor.blue = randomColor + 50;
+                
+                xSpeed = static_cast <float> (rand()) / static_cast <float> (RAND_MAX)/1;
+                //printf("X speed: %f \n", xSpeed) ;
+                //float finalXSpeed = xSpeed + (rand() % 1);
+                finalXSpeed =0 + xSpeed *2;
+                
+                ySpeed = static_cast <float> (rand()) / static_cast <float> (RAND_MAX)/1;
+                //float finalYSpeed = ySpeed + (rand() % 1);
+                finalYSpeed = 0 +  ySpeed *2;
+                
+                flipVert = rand() % 3;
+                flipHor = rand() % 3;
+                
+                
+                if (flipVert)
+                {
+                    tempDisplacement.y = -finalYSpeed;
+                } else
+                {
+                    tempDisplacement.y = finalYSpeed;
+                }
+                
+                if (flipHor)
+                {
+                    tempDisplacement.x = -finalXSpeed;
+                } else
+                {
+                    tempDisplacement.x = finalXSpeed;
+                }
+                (*curr)->GetLastAction()->SetDisplacement(tempDisplacement);
+                
                 break;
                 
             case PARTICLE_TYPE_SMOKE:
@@ -1316,12 +1356,72 @@ void EjectParticles(float x , float y,int numberOfParticles)
                 newColor.red = 100;
                 newColor.green = 150;
                 newColor.blue = 255;
+                
+                xSpeed = static_cast <float> (rand()) / static_cast <float> (RAND_MAX)/1;
+                //printf("X speed: %f \n", xSpeed) ;
+                //float finalXSpeed = xSpeed + (rand() % 1);
+                finalXSpeed =0 + xSpeed *2;
+                
+                ySpeed = static_cast <float> (rand()) / static_cast <float> (RAND_MAX)/1;
+                //float finalYSpeed = ySpeed + (rand() % 1);
+                finalYSpeed = 0 +  ySpeed *2;
+                
+                flipVert = rand() % 3;
+                flipHor = rand() % 3;
+                
+                
+                if (flipVert)
+                {
+                    tempDisplacement.y = -finalYSpeed;
+                } else
+                {
+                    tempDisplacement.y = finalYSpeed;
+                }
+                
+                if (flipHor)
+                {
+                    tempDisplacement.x = -finalXSpeed;
+                } else
+                {
+                    tempDisplacement.x = finalXSpeed;
+                }
+                (*curr)->GetLastAction()->SetDisplacement(tempDisplacement);
                 break;
                 
             case PARTICLE_TYPE_EXPLOSION:
                 newColor.red = 200;
                 newColor.green = 100;
                 newColor.blue = 100;
+                
+                xSpeed = static_cast <float> (rand()) / static_cast <float> (RAND_MAX)/1;
+                //printf("X speed: %f \n", xSpeed) ;
+                //float finalXSpeed = xSpeed + (rand() % 1);
+                finalXSpeed =0 + xSpeed *2;
+                
+                ySpeed = static_cast <float> (rand()) / static_cast <float> (RAND_MAX)/1;
+                //float finalYSpeed = ySpeed + (rand() % 1);
+                finalYSpeed = 0 +  ySpeed *2;
+                
+                flipVert = rand() % 3;
+                flipHor = rand() % 3;
+                
+                
+                if (flipVert)
+                {
+                    tempDisplacement.y = -finalYSpeed;
+                } else
+                {
+                    tempDisplacement.y = finalYSpeed;
+                }
+                
+                if (flipHor)
+                {
+                    tempDisplacement.x = -finalXSpeed;
+                } else
+                {
+                    tempDisplacement.x = finalXSpeed;
+                }
+                (*curr)->GetLastAction()->SetDisplacement(tempDisplacement);
                 break;
                 
             default:
@@ -1412,6 +1512,7 @@ void ActionsQueueTest()
          currentAction++)
     {
         (*currentAction)->Perform(gameTimer->GetDelta());
+        (*currentAction)->GetActor()->SetLastAction((*currentAction));
     }
     
     for (actionIter currentAction = pelletActionQueue.begin();
@@ -2354,43 +2455,6 @@ void ShootPelletFromPlayer()
     {
         lastPelletAvailable = 0;
     }
-    
-    int randomx =-1 +  rand() % 1;
-    int randomy =-1 +  rand() % 1;
-    
-    displacement.x *= .1;
-    displacement.y *= .1;
-    
-    displacement.x += randomx;
-    displacement.y += randomy;
-    
-
-    
-//    //Make shot particles come out
-//    for (actionIter currentAction = particlesActionQueue.begin() + lastParticleAvailable;
-//         currentAction!= particlesActionQueue.begin() + lastParticleAvailable + numberOfGunShotParticles;
-//         currentAction++)
-//    {
-//        (*currentAction)->SetDisplacement(displacement);
-//    }
-//    
-//    for (actorIter currentActor = particles.begin() + lastParticleAvailable;
-//         currentActor!= particles.begin() + lastParticleAvailable + numberOfGunShotParticles;
-//         currentActor++)
-//    {
-//        SetParticleType((*currentActor), PARTICLE_TYPE_GUNSHOT);
-//    }
-//    
-//    
-//    EjectParticles(playerActor->GetDimensions().x + 32 + cameraX, playerActor->GetDimensions().y + 32 + cameraY, numberOfGunShotParticles);
-//    
-//    for (actionIter currentAction = particlesActionQueue.begin() + lastParticleAvailable;
-//         currentAction!= particlesActionQueue.begin() + lastParticleAvailable + numberOfGunShotParticles;
-//         currentAction++)
-//    {
-//        (*currentAction)->SetDisplacement(displacement);
-//    }
-
 }
 
 
@@ -3091,9 +3155,10 @@ void UpdateParticles(Uint32 delta)
                 
                 
             case PARTICLE_TYPE_INVISIBLE:
-                newColor.red -= 1;
-                newColor.blue -= 1;
-                newColor.green -= 1;
+                newColor.red -= 3;
+                newColor.blue -= 3;
+                newColor.green -= 3;
+                
                 if (newColor.red <= 0){newColor.red = 0;}
                 if (newColor.green <= 0){newColor.green = 0;}
                 if (newColor.blue <= 0){newColor.blue = 0;}
@@ -3242,6 +3307,153 @@ void UpdateParticles(Uint32 delta)
 void SetParticleType(Actor* particle, particle_type type)
 {
     particle->SetID(type);
+    
+    int randX = 1 +rand() % 1;
+    int randY = 1 + rand() % 1;
+    
+    randX = 0;
+    randY = 0;
+
+    
+    int randomColor = 1 + rand() % 30 + (1 * 10);
+    
+    float xSpeed,ySpeed;
+    float finalXSpeed,finalYSpeed;
+    bool flipVert,flipHor;
+    dimensions_t tempDisplacement;
+    Color newColor;
+    
+    switch (particle->GetID()) {
+            
+        case PARTICLE_TYPE_INVISIBLE:
+            break;
+            
+        case PARTICLE_TYPE_RAY:
+            newColor.red = randomColor + 30;
+            newColor.green = randomColor + 44;
+            newColor.blue = randomColor + 50;
+            
+            xSpeed = static_cast <float> (rand()) / static_cast <float> (RAND_MAX)/1;
+            //printf("X speed: %f \n", xSpeed) ;
+            //float finalXSpeed = xSpeed + (rand() % 1);
+            finalXSpeed =0 + xSpeed *2;
+            
+            ySpeed = static_cast <float> (rand()) / static_cast <float> (RAND_MAX)/1;
+            //float finalYSpeed = ySpeed + (rand() % 1);
+            finalYSpeed = 0 +  ySpeed *2;
+            
+            flipVert = rand() % 3;
+            flipHor = rand() % 3;
+            
+            
+            if (flipVert)
+            {
+                tempDisplacement.y = -finalYSpeed;
+            } else
+            {
+                tempDisplacement.y = finalYSpeed;
+            }
+            
+            if (flipHor)
+            {
+                tempDisplacement.x = -finalXSpeed;
+            } else
+            {
+                tempDisplacement.x = finalXSpeed;
+            }
+            particle->GetLastAction()->SetDisplacement(tempDisplacement);
+            
+            break;
+            
+        case PARTICLE_TYPE_SMOKE:
+            newColor.red = 100;
+            newColor.green = 70;
+            newColor.blue = 70;
+            break;
+            
+        case PARTICLE_TYPE_GUNSHOT:
+            newColor.red = 255;
+            newColor.green = 255;
+            newColor.blue = 255;
+            break;
+            
+        case PARTICLE_TYPE_WARP:
+            newColor.red = 100;
+            newColor.green = 150;
+            newColor.blue = 255;
+            
+            xSpeed = static_cast <float> (rand()) / static_cast <float> (RAND_MAX)/1;
+            //printf("X speed: %f \n", xSpeed) ;
+            //float finalXSpeed = xSpeed + (rand() % 1);
+            finalXSpeed =0 + xSpeed *2;
+            
+            ySpeed = static_cast <float> (rand()) / static_cast <float> (RAND_MAX)/1;
+            //float finalYSpeed = ySpeed + (rand() % 1);
+            finalYSpeed = 0 +  ySpeed *2;
+            
+            flipVert = rand() % 3;
+            flipHor = rand() % 3;
+            
+            
+            if (flipVert)
+            {
+                tempDisplacement.y = -finalYSpeed;
+            } else
+            {
+                tempDisplacement.y = finalYSpeed;
+            }
+            
+            if (flipHor)
+            {
+                tempDisplacement.x = -finalXSpeed;
+            } else
+            {
+                tempDisplacement.x = finalXSpeed;
+            }
+            particle->GetLastAction()->SetDisplacement(tempDisplacement);
+            break;
+            
+        case PARTICLE_TYPE_EXPLOSION:
+            newColor.red = 200;
+            newColor.green = 100;
+            newColor.blue = 100;
+            
+            xSpeed = static_cast <float> (rand()) / static_cast <float> (RAND_MAX)/1;
+            //printf("X speed: %f \n", xSpeed) ;
+            //float finalXSpeed = xSpeed + (rand() % 1);
+            finalXSpeed =0 + xSpeed *2;
+            
+            ySpeed = static_cast <float> (rand()) / static_cast <float> (RAND_MAX)/1;
+            //float finalYSpeed = ySpeed + (rand() % 1);
+            finalYSpeed = 0 +  ySpeed *2;
+            
+            flipVert = rand() % 3;
+            flipHor = rand() % 3;
+            
+            
+            if (flipVert)
+            {
+                tempDisplacement.y = -finalYSpeed;
+            } else
+            {
+                tempDisplacement.y = finalYSpeed;
+            }
+            
+            if (flipHor)
+            {
+                tempDisplacement.x = -finalXSpeed;
+            } else
+            {
+                tempDisplacement.x = finalXSpeed;
+            }
+            particle->GetLastAction()->SetDisplacement(tempDisplacement);
+            break;
+            
+            
+            
+        default:
+            break;
+    }
 }
 
 
@@ -3472,6 +3684,9 @@ void LoadSpawnPoint()
 {
     playerActor->SetPosX(SCREEN_WIDTH/2);
     playerActor->SetPosY(SCREEN_HEIGHT/2);
+    
+    
+    playerMoveUp->Stop();
     
     for (int x = 0 ; x < mapSurface->w ; x++)
     {
@@ -3818,6 +4033,7 @@ void PlayerKill()
         SetParticleType((*currentActor), PARTICLE_TYPE_INVISIBLE);
     }
     
+    lastParticleAvailable = 0;
 
     for (actorIter currentActor = particles.begin() + lastParticleAvailable;
          currentActor!= particles.begin() + lastParticleAvailable + numberOfExplosionParticles;
@@ -3863,16 +4079,17 @@ void PlayerWin()
          currentActor!= particles.end();
          currentActor++)
     {
-        SetParticleType((*currentActor), PARTICLE_TYPE_INVISIBLE);
-    }
-    
-    lastParticleAvailable = 0;
-    for (actorIter currentActor = particles.begin() + lastParticleAvailable;
-         currentActor!= particles.begin() + lastParticleAvailable + numberOfWarpParticles;
-         currentActor++)
-    {
         SetParticleType((*currentActor), PARTICLE_TYPE_WARP);
     }
+ 
+    
+    lastParticleAvailable = 0;
+//    for (actorIter currentActor = particles.begin() + lastParticleAvailable;
+//         currentActor!= particles.begin() + lastParticleAvailable + numberOfWarpParticles;
+//         currentActor++)
+//    {
+//        SetParticleType((*currentActor), PARTICLE_TYPE_WARP);
+//    }
     
     EjectParticles(playerActor->GetDimensions().x + 64 + cameraX, playerActor->GetDimensions().y + 64 + cameraY, numberOfWarpParticles);
 }
