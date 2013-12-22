@@ -9,9 +9,29 @@
 #ifndef __TestingInterfaces1__Definitions__
 #define __TestingInterfaces1__Definitions__
 
+//OS Pre-processor definitions
+#if defined  __APPLE__ && __MACH__
+#define CURRENTOS 1
+#include <SDL2/SDL.h>
+#include <SDL2_mixer/SDL_mixer.h>
+#include <SDL2_image/SDL_image.h>
+#include <SDL2_ttf/SDL_ttf.h>
+#elif defined _WIN32
+#define CURRENTOS 2
+#include "SDL.h"
+#include "SDL_mixer.h"
+#include "SDL_image.h"
+typedef __int32 int32_t;
+typedef unsigned __int32 Uint32;
+#elif defined __linux__
+#define CURRENTOS 3
+#elif 
+#define CURRENTOS 0
+#endif
+
 #include <iostream>
 #include <string>
-#include <SDL2/SDL.h>
+
 
 using namespace std;
 
@@ -31,9 +51,6 @@ typedef struct Vec3_s
 {
     float x,y,z;
 }Vec3_t;
-
-void PrintRect(SDL_Rect rect);
-
 
 using namespace std;
 

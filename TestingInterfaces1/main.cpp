@@ -4,10 +4,7 @@
 
 //Working on windows version
 
-#include <SDL2/SDL.h>
-#include <SDL2_mixer/SDL_mixer.h>
-#include <SDL2_image/SDL_image.h>
-#include <SDL2_ttf/SDL_ttf.h>
+#include "Definitions.h"
 #include <stdint.h>
 #include <math.h>
 #include <time.h>
@@ -19,12 +16,16 @@
 #include "MoveAction.h"
 #include "timer.h"
 #include "GravityAction.h"
-#include "Definitions.h"
+
 
 // ============================================================================
 // [SdlApplication]
 // ============================================================================
+
+
+#if defined  __APPLE__ && __MACH__
 #pragma mark - Definitions
+#endif
 
 #define APPTITLE "LD 28 - Luminess"
 // SdlApplication is nothing more than thin wrapper to SDL library. You need
@@ -32,7 +33,10 @@
 
 
 //-------------------------------------------
+#if defined  __APPLE__ && __MACH__
 #pragma mark Global Values
+#endif
+
 
 
 typedef vector<Actor*>* ActorList;
@@ -163,7 +167,7 @@ bool    purpleKey    =false;
 
 bool    allKey      =false;
 
-enum powers {noPower,bluePower,yellowPower,purplePower,cyanPower,allPower};
+enum powers {noPower = 0,bluePower,yellowPower,purplePower,cyanPower,allPower};
 
 powers tempPower;
 powers currentPower = noPower;
@@ -212,7 +216,10 @@ vector<Actor*> particles;
 SDL_Window *win;
 
 //---------------------------------------------
-#pragma mark - Test Objects
+#if defined  __APPLE__ && __MACH__
+#pragma mark Test Objects
+#endif
+
 Renderer*           renderer;
 Actor*              particle;
 RenderableShape*    particleShape;
@@ -241,8 +248,6 @@ Mix_Chunk*          s_Orb;
 Mix_Chunk*          s_End;
 
 
-
-TTF_Font*           f_TestFont;
 
 SDL_Surface*        textSurface;
 SDL_Texture*        textTexture;
@@ -330,7 +335,10 @@ button_t            buttonUp,buttonNext,buttonDown,buttonRight,buttonLeft,button
 
 
 //--------------------------------------------------
-#pragma mark - Test Function Declaration
+#if defined  __APPLE__ && __MACH__
+#pragma mark Function Declaration
+#endif
+
 void ChangeFullScreen(bool fullscreen);
 void PrintDynamicMemory();
 
@@ -455,7 +463,10 @@ void LoadImageTest();
 
 
 //-------------------------------------------------
-#pragma mark - SDL Application Struct
+#if defined  __APPLE__ && __MACH__
+#pragma mark SDL Application Struct
+#endif
+
 //Start SDL app struct
 struct SdlApplication
 {
@@ -1025,7 +1036,9 @@ void SdlApplication::onEvent(SDL_Event* ev)
                 } else {
                     buttonPowerSwitch.pressed = true;
                     PlaySound(s_Orb);
-                    currentPower++;
+					int powerInt = currentPower;
+					powerInt++;
+					currentPower = static_cast<powers>(powerInt);
                 }
                 buttonPowerSwitch.pressed = true;
                 }
@@ -1072,7 +1085,10 @@ void SdlApplication::Render()
 // ============================================================================
 // [Entry-Point]
 // ============================================================================
-#pragma mark - Entry Point
+#if defined  __APPLE__ && __MACH__
+#pragma mark Entry Point
+#endif
+
 int main(int argc, char* argv[])
 {
 	SdlApplication app;
@@ -1082,7 +1098,10 @@ int main(int argc, char* argv[])
 
 
 //-------------------------------------------------------
-#pragma mark - Test Function Definition
+#if defined  __APPLE__ && __MACH__
+#pragma mark Test Function Declaration
+#endif
+
 
 void CreateParticles()
 {
@@ -1792,7 +1811,13 @@ void LoadSounds()
     s_Orb        = Mix_LoadWAV("Orbcollect.wav");
     
     
-    s_Song1         = Mix_LoadMUS("/audio/music/song1.ogg");
+	if (!s_Shoot)
+	{
+		printf("Error loading sound for shoot: %s \n", Mix_GetError());
+	}
+
+
+    s_Song1         = Mix_LoadMUS("song1.ogg");
     
     Mix_VolumeMusic(50);
     
@@ -1802,14 +1827,14 @@ void LoadSounds()
     Mix_VolumeChunk(s_Bounce, 60);
     
     Mix_VolumeChunk(s_End, 30);
-    Mix_VolumeChunk(s_Orb, 70);
+
+	Mix_VolumeChunk(s_Orb, 70);
     
     
     if (!s_Blood)
     {
         printf("Error loading song: %s \n" , Mix_GetError());
     }
-    
 
     
     if (!s_Song1)
@@ -1845,36 +1870,6 @@ void TestMusic()
 }
 
 
-void InitTTF()
-{
-    TTF_Init();
-}
-
-
-
-
-
-void LoadFont()
-{
-    if (!(f_TestFont = TTF_OpenFont("8bit.ttf", 24)))
-    {
-        printf("Error loading font %s \n" , TTF_GetError());
-    }
-}
-
-
-void RenderText(SDL_Renderer *renderer)
-{
-    
-    SDL_Color color;
-    color.r = 100;
-    color.g = 100;
-    color.b = 100;
-    color.a = 200;
-    
-    textSurface = TTF_RenderText_Solid(f_TestFont, "Hello World", color);
-    textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
-}
 
 
 void InitImage()
@@ -2011,7 +2006,7 @@ void LoadPlayerSprite(SDL_Renderer* sdlRenderer)
         // handle error
     }
     
-    //!!!:REMOVE THIS SHIT
+  
     armSpriteSurface=IMG_Load("cursor.png");
     if(!armSpriteSurface) {
         printf("IMG_Load: %s\n", IMG_GetError());
@@ -2037,6 +2032,7 @@ void LoadPlayerSprite(SDL_Renderer* sdlRenderer)
     color.green = 0;
     color.blue = 0;
     
+
     x = playerSpriteSurface->w;
     y = playerSpriteSurface->h;
     
@@ -2406,7 +2402,7 @@ void CreatePellets(SDL_Renderer* sdlRenderer)
         
         pelletMovement = 0;
         
-        pelletMovement = new MoveAction(displacement);
+        pelletMovement = new MoveAction(targetDisplacement);
         
         pelletMovement->AttachTo(pelletActor);
         
@@ -3737,7 +3733,9 @@ void CheckActivePower()
         case yellowPower:
             if (!yellowKey)
             {
-                currentPower++;
+				int powerInt = currentPower;
+				powerInt++;
+				currentPower = static_cast<powers>(powerInt);
             }
             blueActive = false;
             yellowActive = true;
@@ -3749,7 +3747,9 @@ void CheckActivePower()
         case purplePower:
             if (!purpleKey)
             {
-                currentPower++;
+				int powerInt = currentPower;
+				powerInt++;
+				currentPower = static_cast<powers>(powerInt);
             }
             blueActive = false;
             yellowActive = false;
@@ -3761,7 +3761,9 @@ void CheckActivePower()
         case cyanPower:
             if (!cyanKey)
             {
-                currentPower++;
+				int powerInt = currentPower;
+				powerInt++;
+				currentPower = static_cast<powers>(powerInt);
             }
             blueActive = false;
             yellowActive = false;
@@ -4193,7 +4195,7 @@ void LoadLevel(SDL_Renderer* sdlRenderer)
         SDL_FreeSurface(mapSurface);
     }
     
-    sprintf(file,"level%lu.png", CURRENT_LEVEL);
+    sprintf_s(file,"level%lu.png", CURRENT_LEVEL);
     //sprintf(file,"testlevel8xf.png");
     
     if (! (mapSurface = IMG_Load(file)))
@@ -4245,7 +4247,7 @@ void LoadBanner(SDL_Renderer* sdlRenderer)
     
     delete bannerSprite;
     
-    sprintf(bannerfile,"levelslide%lu.png", CURRENT_LEVEL);
+    sprintf_s(bannerfile,"levelslide%lu.png", CURRENT_LEVEL);
 
     if (! (bannerSurface = IMG_Load(bannerfile)))
     {

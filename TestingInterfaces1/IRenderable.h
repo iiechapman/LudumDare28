@@ -10,7 +10,14 @@
 #define __TestingInterfaces1__IRenderable__
 
 #include <iostream>
+
+#if WINDOWS
+#include "SDL.h"
+#endif
+
+#if APPLE
 #include <SDL2/SDL.h>
+#endif
 #include "Definitions.h"
 
 

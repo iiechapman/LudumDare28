@@ -11,6 +11,8 @@
 MoveAction::MoveAction()
 {
     dimensions_t nullDisplacement;
+	nullDisplacement.x = 0;
+	nullDisplacement.y = 0;
     MoveAction(nullDisplacement,0);
 }
 

@@ -9,8 +9,9 @@
 #ifndef __TestSDL2__timer__
 #define __TestSDL2__timer__
 
-#include <iostream>
-#include <SDL2/SDL.h>
+#include "definitions.h"
+
+using namespace std;
 
 class Timer{
     

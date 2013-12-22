@@ -19,8 +19,7 @@ Generic top level component style , to be inherited by all potential interface o
 #define __TestingInterfaces1__IActorComponent__
 
 #include <iostream>
-#include <SDL2/SDL.h>
-#include "Definitions.h"
+#include "definitions.h"
 #include "IGlobalID.h"
 
 class Actor;

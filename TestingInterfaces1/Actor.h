@@ -8,13 +8,11 @@
 
 #ifndef __TestingInterfaces1__Actor__
 #define __TestingInterfaces1__Actor__
-
+#include "definitions.h"
 #include <iostream>
 #include <string>
-#include <SDL2/SDL.h>
 #include <vector>
 #include "RenderableShape.h"
-#include "Definitions.h"
 #include "IActorComponent.h"
 #include "MoveAction.h"
 

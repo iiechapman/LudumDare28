@@ -11,7 +11,14 @@
 
 #include <iostream>
 #include <vector>
+
+#if APPLE
 #include <SDL2/SDL.h>
+#endif
+
+#if WINDOWS
+#include "SDL.h"
+#endif
 #include "IRenderable.h"
 
 using namespace std;

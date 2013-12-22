@@ -11,7 +11,7 @@
 
 #include <iostream>
 #include <vector>
-#include <SDL2/SDL.h>
+#include "definitions.h"
 #include "Actor.h"
 #include "IProcess.h"
 
